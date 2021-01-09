@@ -2,7 +2,7 @@ import { TransitionInterface } from './transition.interface';
 
 export interface GraphInterface {
   name: string;
-  stateProp: string;
+  initialState: string;
   states: Array<string>;
   transitions: TransitionInterface[];
 }
