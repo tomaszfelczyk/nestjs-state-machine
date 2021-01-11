@@ -35,7 +35,7 @@ describe('StateMachineModule - e2e', () => {
     expect(await projectStateMachine.can(ProjectTransition.START)).toBeTruthy();
   });
 
-  it(`can finish project - done`, async () => {
+  it(`can finish new project - done`, async () => {
     expect(
       await projectStateMachine.can(ProjectTransition.FINISH),
     ).toBeTruthy();
@@ -93,9 +93,7 @@ describe('StateMachineModule - e2e', () => {
     const availableTransitionNames = projectStateMachine
       .getAvailableTransitions()
       .map(transition => transition.name);
-    expect(subject.announcedTranstitionNames).toEqual([
-      ProjectTransition.FINISH,
-    ]);
+    expect(availableTransitionNames).toEqual([ProjectTransition.FINISH]);
   });
 
   afterEach(async () => {

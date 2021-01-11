@@ -1,7 +1,7 @@
 import { SetMetadata } from '@nestjs/common';
 import { OnEventMetadata } from '@nestjs/event-emitter';
 
-export const OnTransition = (
+export const OnBeginTransition = (
   graphName: string = '*',
   state: string = '*',
   async: boolean = false,
