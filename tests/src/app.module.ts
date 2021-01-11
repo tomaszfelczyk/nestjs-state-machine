@@ -1,5 +1,13 @@
 import { Module } from '@nestjs/common';
 import { StateMachineModule } from '../../lib';
+import { LeaveListener } from './callbacks/leave.listener';
+import { TransitionListener } from './callbacks/transition.listener';
+import { EnterListener } from './callbacks/enter.listener';
+
+import { BlockingGuard } from './guards/blocking.guard';
+import { EnteredListener } from './callbacks/entered.listener';
+import { CompletedListener } from './callbacks/completed.listener';
+import { AnnounceListener } from './callbacks/announce.listener';
 
 @Module({
   imports: [
@@ -28,6 +36,14 @@ import { StateMachineModule } from '../../lib';
       },
     ]),
   ],
-  providers: [],
+  providers: [
+    BlockingGuard,
+    LeaveListener,
+    TransitionListener,
+    EnterListener,
+    EnteredListener,
+    CompletedListener,
+    AnnounceListener,
+  ],
 })
 export class AppModule {}

@@ -1,4 +1,4 @@
-export * from './on-state-machine-guard.decorator';
+export * from './on-guard.decorator';
 export * from './on-leave.decorator';
 export * from './on-transition.decorator';
 export * from './on-enter.decorator';

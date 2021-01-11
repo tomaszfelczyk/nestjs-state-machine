@@ -1,7 +1,7 @@
 import { SetMetadata } from '@nestjs/common';
 import { OnEventMetadata } from '@nestjs/event-emitter';
 
-export const OnStateMachineGuard = (
+export const OnGuard = (
   graphName: string = '*',
   transitionName: string = '*',
 ): MethodDecorator =>
