@@ -13,7 +13,7 @@ export class StateMachineModule {
 
     return {
       module: StateMachineModule,
-      imports: [EventEmitterModule],
+      imports: [EventEmitterModule.forRoot({ wildcard: true })],
       providers: [graphsProvider, StateMachineFactory],
       exports: [StateMachineFactory],
     };

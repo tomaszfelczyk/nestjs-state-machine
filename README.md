@@ -8,7 +8,8 @@ Nestjs State Machine module for [Nest](https://github.com/nestjs/nest) built on 
 $ npm i --save @depthlabs/nestjs-state-machine
 ```
 
-## Todo
+## Example
+
 
 ## License
 

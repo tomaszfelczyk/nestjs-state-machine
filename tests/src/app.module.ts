@@ -1,14 +1,33 @@
 import { Module } from '@nestjs/common';
-import { EventEmitterModule } from '../../lib';
-import { EventsConsumer } from './events.consumer';
-import { EventsProducer } from './events.producer';
+import { StateMachineModule } from '../../lib';
 
 @Module({
   imports: [
-    EventEmitterModule.forRoot({
-      wildcard: true,
-    }),
+    StateMachineModule.forRoot([
+      {
+        name: 'project',
+        initialState: 'new',
+        states: ['new', 'in-progress', 'done', 'archived'],
+        transitions: [
+          {
+            name: 'start',
+            from: ['new'],
+            to: 'in-progress',
+          },
+          {
+            name: 'finish',
+            from: ['new', 'in-progress'],
+            to: 'done',
+          },
+          {
+            name: 'archive',
+            from: ['done'],
+            to: 'archived',
+          },
+        ],
+      },
+    ]),
   ],
-  providers: [EventsConsumer, EventsProducer],
+  providers: [],
 })
 export class AppModule {}
