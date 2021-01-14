@@ -11,7 +11,7 @@ $ npm i --save @depthlabs/nestjs-state-machine
 
 For example, we will map the following state machine:
 
-![example state machine](https://github.com/depthlabs-io/nestjs-state-machine/blob/master/example.jpg?raw=true)
+![example state machine](https://github.com/depthlabs-io/nestjs-state-machine/blob/main/example.jpg?raw=true)
 
 
 After installation, import StateMachineModule into your root module with state machine graph configurations:
