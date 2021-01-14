@@ -1,6 +1,6 @@
 {
   "name": "@depthlabs/nestjs-state-machine",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Finite State Machine for Nestjs framework",
   "author": "Tomasz Felczyk",
   "license": "MIT",
