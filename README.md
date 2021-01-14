@@ -1,6 +1,6 @@
 ## Description
 
-Nestjs State Machine module for [Nest](https://github.com/nestjs/nest).
+Finite State Machine module for [Nest](https://github.com/nestjs/nest).
 
 ## Getting started
 
@@ -9,7 +9,12 @@ Install package:
 $ npm i --save @depthlabs/nestjs-state-machine
 ```
 
-After installation, import StateMachineModule into your root module with state machinge graph configurations ex.:
+For example, we will map the following state machine:
+
+![example state machine](https://github.com/depthlabs-io/nestjs-state-machine/blob/master/example.jpg?raw=true)
+
+
+After installation, import StateMachineModule into your root module with state machine graph configurations:
 ```typescript
 // app.module.ts
 import { StateMachineModule } from '@depthlabs/nestjs-state-machine';
@@ -24,7 +29,11 @@ import { StateMachineModule } from '@depthlabs/nestjs-state-machine';
             // Initial state of graph
             initialState: 'new',
             // Available states in graph
-            states: ['new', 'in-progress', 'done'],
+            states: [
+                'new',
+                'in-progress',
+                'done'
+            ],
             // Available transitions in graph
             transitions: [
                 {
@@ -48,7 +57,7 @@ import { StateMachineModule } from '@depthlabs/nestjs-state-machine';
 export class AppModule {}
 ```
 
-It's good idea to define graph, state and transition names in one place ex.:
+It's good idea to define graph, state and transition names in one place e.g.:
 ```typescript
 // constants.ts
 export const PROJECT_GRAPH = 'project-graph'
@@ -69,27 +78,34 @@ export enum ProjectTransition {
 and then:
 
 ```typescript
+import { StateMachineModule } from '@depthlabs/nestjs-state-machine';
 import { PROJECT_GRAPH, ProjectState, ProjectTransition } from './constants';
 
 // ...
 
-StateMachineModule.forRoot([{
-    name: PROJECT_GRAPH,
-    initialState: ProjectState.NEW,
-    states: [ProjectState.NEW, ProjectState.IN_PROGRESS, ProjectState.DONE],
-    transitions: [
-        {
-            name: ProjectTransition.START,
-            from: [ProjectState.NEW],
-            to: ProjectState.IN_PROGRESS,
-        },
-        {
-            name: ProjectTransition.FINISH,
-            from: [ProjectState.IN_PROGRESS],
-            to: ProjectState.DONE,
-        }
-    ],
-}]);
+StateMachineModule.forRoot([
+    {
+        name: PROJECT_GRAPH,
+        initialState: ProjectState.NEW,
+        states: [
+            ProjectState.NEW,
+            ProjectState.IN_PROGRESS,
+            ProjectState.DONE
+        ],
+        transitions: [
+            {
+                name: ProjectTransition.START,
+                from: [ProjectState.NEW],
+                to: ProjectState.IN_PROGRESS,
+            },
+            {
+                name: ProjectTransition.FINISH,
+                from: [ProjectState.IN_PROGRESS],
+                to: ProjectState.DONE,
+            }
+        ],
+    }
+]);
 ```
 
 Next, create model or use your exisiting model and decorate property which will be responsible for storing state of model:
@@ -106,34 +122,35 @@ export class Project {
 
 }
 ```
-`@StateStore` takes one argument with graph name (string). Thanks to this one model can handle more then one graph: 
+`@StateStore` takes one argument with graph name (string). Thanks to this one model can handle more then many graphs: 
 ```typescript
 @StateStore(PROJECT_GRAPH)
 state: string = ProjectState.NEW;
 
-@StateStore(PROJECT_TASKS_GRAPH)
-taskState: string = ProjectTasksState.NEW;
+@StateStore(PROJECT_STATUS_GRAPH)
+status: string = ProjectStatusState.ACTIVE;
 ```
 
-At this point we can use our state machine.
-To create state machine, first inject `StateMachineFactory` using standard constructor injection:
+At this point we can create our state machine. First inject `StateMachineFactory` using standard constructor injection:
 
 
 ```typescript
 import { StateMachineFactory } from '@depthlabs/nestjs-state-machine';
-import { PROJECT_GRAPH, ProjectTransition } from './constants';
-import { Project } from './project.model'
+
+// ...
 
 constructor(
     private readonly stateMachineFactory: StateMachineFactory,
 ) {}
 ```
 
-Create state machine with instance of Project model as subject (in first argument) and with graph name in second.
+Create state machine with instance of `Project` model as subject in first argument of factory and with graph name in second.
 ```typescript
 const projectStateMachine = this.stateMachineFactory.create<Project>(project, PROJECT_GRAPH)
 ```
     
+## State Machine methods
+
 Apply transition:
 ```typescript
 // takes transition name in argument
@@ -156,8 +173,7 @@ await projectStateMachine.getAvailableTransitions()
     
 ## Guards
 
-You can create guards to block transitions and callback/listeners to do additional actions when a state machine operation happened (e.g. sending emails, recalculate).
-
+You can create guards to block transitions.  
 To declare an `Guard`, decorate a method with the `@OnGuard()` decorator:
 
 ```typescript
@@ -210,18 +226,22 @@ projectStateMachine.getAvailableTransitions()
 // [] - empty
 ```
 
-## Callbacks
+## Transition Events
 
-When a state transition is initiated, the callbakcs are dispatched in the following order:  
-`LeaveState` - The subject is about to leave a place  
-`BeginTransition` - The subject is going through this transition.  
-`EnterState` - The subject is about to enter a new place. This event is triggered right before the subject places are updated.  
-  
-Change of state on subject.  
+You can create transition event listeners to do additional actions when a state machine operation happened (e.g. sending emails, recalculate)
 
-`EnteredState` - The subject has entered in the places and the marking is updated.  
-`CompletedTransition` - The object has completed this transition.  
-`AnnounceTransitions` - Triggered for each transition that now is accessible for the subject.
+When a state transition is initiated, the events are dispatched in the following order:  
+
+| Order | Event | Decorator | Decorator second argument |
+|-|-|-|-|
+| 1 | LeaveState<br><small><small>(The subject is about to leave a place). | OnLeaveState | State name |
+| 2 | BeginTransition<br><small>(The subject is going through this transition.)</small> | OnBeginTransition | Transition name |
+| 3 | EnterState<br><small>(The subject is about to enter a new place. This event is triggered right before the subject places are updated.)</small> | OnEnterState | State name |
+| 4 | -> Change of state 
+| 5 | EnteredState<br><small>(The subject has entered in the places and the marking is updated.)</small> | OnEnteredState | State name |
+| 6 | CompletedTransition<br><small>(The object has completed this transition.)</small> | OnCompletedTransition | Transition name |
+| 7 | AnnounceTransitions<br><small>(Triggered for each transition that now is accessible for the subject.)</small> | OnAnnounceTransitions | State name |
+
 
 Example:
 ```typescript
@@ -233,7 +253,7 @@ export class NotifyTeamAboutFinishedTask {
 
     // Graph name in first argument, transition name in second. Third if truem method is async.
     @OnCompletedTransition(PROJECT_GRAPH, ProjectTransition.FINISH, true)
-    async handle(event: BeginTransitionEvent<Project>) {
+    async handle(event: CompletedTransitionEvent<Project>) {
         // Send emails to all users in team
     }
 

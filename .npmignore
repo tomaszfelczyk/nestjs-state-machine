@@ -8,9 +8,4 @@ tsconfig.json
 .prettierrc
 
 # github
-.github
-CONTRIBUTING.md
 renovate.json
-
-# ci
-.circleci
