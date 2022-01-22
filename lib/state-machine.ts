@@ -31,11 +31,28 @@ export class StateMachine<T extends Object> {
     return !guardEvent.isBlocked();
   }
 
-  getAvailableTransitions(): TransitionInterface[] {
+  async getAvailableTransitions(): Promise<TransitionInterface[]> {
     const state = this.getSubjectCurrentState();
-    return this.graph.transitions.filter(transition =>
+    const transitions = this.graph.transitions.filter(transition =>
       transition.from.includes(state),
     );
+
+    const availableTransitions: TransitionInterface[] = [];
+    const promises = [];
+
+    for (const transition of transitions) {
+      promises.push(
+        this.checkGuards(state, transition).then(guardResult => {
+          if (!guardResult.isBlocked()) {
+            availableTransitions.push(transition);
+          }
+        }),
+      );
+    }
+
+    await Promise.all(promises);
+
+    return availableTransitions;
   }
 
   async apply(transitionName: string): Promise<void> {
@@ -84,9 +101,11 @@ export class StateMachine<T extends Object> {
     await this.completedTransition(fromState, transition);
 
     // AnnounceTransactionsEvent
-    this.getAvailableTransitions().forEach(async availableTransition => {
-      await this.announceTransactions(fromState, availableTransition);
-    });
+    await this.getAvailableTransitions().then(transitions =>
+      transitions.forEach(async availableTransition => {
+        await this.announceTransactions(fromState, availableTransition);
+      }),
+    );
   }
 
   private getTransition(transitionName: string): TransitionInterface {
