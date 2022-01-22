@@ -90,9 +90,22 @@ describe('StateMachineModule - e2e', () => {
   // Available Transitions
   it(`has available transitions`, async () => {
     await projectStateMachine.apply(ProjectTransition.START);
-    const availableTransitionNames = projectStateMachine
+    const availableTransitionNames = await projectStateMachine
       .getAvailableTransitions()
-      .map(transition => transition.name);
+      .then(transitions => {
+        return transitions.map(transition => transition.name);
+      });
+    expect(availableTransitionNames).toEqual([ProjectTransition.FINISH]);
+  });
+
+  // Available Non Blocked Transitions
+  it(`has available non-blocked transitions`, async () => {
+    subject.name = 'blockme';
+    const availableTransitionNames = await projectStateMachine
+      .getAvailableTransitions()
+      .then(transitions => {
+        return transitions.map(transition => transition.name);
+      });
     expect(availableTransitionNames).toEqual([ProjectTransition.FINISH]);
   });
 
