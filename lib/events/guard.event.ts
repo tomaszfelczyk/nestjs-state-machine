@@ -3,7 +3,7 @@ import { GenericStateMachineEvent } from './generic-state-machine.event';
 export class GuardEvent<T> extends GenericStateMachineEvent<T> {
   protected readonly eventType: string = 'guard';
 
-  private blocked: boolean = false;
+  private blocked = false;
 
   private blockingReasons: Array<string> = [];
 

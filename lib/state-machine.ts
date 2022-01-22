@@ -11,7 +11,7 @@ import { BeginTransitionEvent } from './events/begin-transition.event';
 import { CompletedTransitionEvent } from './events/completed-transition.event';
 import { AnnounceTransitionsEvent } from './events/announce-transitions.event';
 
-export class StateMachine<T extends Object> {
+export class StateMachine<T> {
   constructor(
     private readonly subject: T,
     private readonly graph: GraphInterface,
