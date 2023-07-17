@@ -1,6 +1,6 @@
 {
-  "name": "@depthlabs/nestjs-state-machine",
-  "version": "0.0.2",
+  "name": "@lfernandezcall/nestjs-state-machine",
+  "version": "1.0.0",
   "description": "Finite State Machine for Nestjs framework",
   "author": "Tomasz Felczyk",
   "license": "MIT",
@@ -20,7 +20,7 @@
     "release": "release-it"
   },
   "dependencies": {
-    "@nestjs/event-emitter": "0.0.2"
+    "@nestjs/event-emitter": "2.0.0"
   },
   "devDependencies": {
     "@nestjs/common": "7.6.5",
@@ -63,5 +63,8 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/depthlabs-io/nestjs-state-machine"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
